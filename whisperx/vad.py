@@ -44,7 +44,11 @@ def load_vad_model(device, vad_onset=0.500, vad_offset=0.363, use_auth_token=Non
                     loop.update(len(buffer))
 
     model_bytes = open(model_fp, "rb").read()
-    if hashlib.sha256(model_bytes).hexdigest() != VAD_SEGMENTATION_URL.split('/')[-2]:
+    model_checksum = hashlib.sha256(model_bytes).hexdigest()
+    url_checksum = VAD_SEGMENTATION_URL.split('/')[-2]
+    upgrade_version = '7b1a27dedbe8fb4e42b86905ee4a5d293600e231a0d802c9e7ef9c57a27191e0'
+
+    if model_checksum != url_checksum and model_checksum != upgrade_version:
         raise RuntimeError(
             "Model has been downloaded but the SHA256 checksum does not not match. Please retry loading the model."
         )
